@@ -10,10 +10,9 @@ logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 
-
 np.set_printoptions(threshold=sys.maxsize)
 
-file = "test_pix3.jpg"
+file = "/Users/User/Documents/GitHub/FTC-robotics-programing/matrix_test/test_pix3.jpg"
 
 # Load the image
 image = cv2.imread(file)
@@ -39,7 +38,7 @@ size = value_channel.shape
 # Display the images
 plt.subplot(1, 3, 1)
 plt.imshow(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
-plt.title('Color Image')
+plt.title('Original Image')
 
 plt.subplot(1, 3, 2)
 plt.imshow(hsv_image)
@@ -48,7 +47,6 @@ plt.title('HSV Image')
 plt.subplot(1, 3, 3)
 plt.imshow(value_channel, cmap='gray')
 plt.title('Value Channel (Grayscale)')
-
 
 
 print(image_array)
