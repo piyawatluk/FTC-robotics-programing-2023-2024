@@ -12,8 +12,8 @@ logging.basicConfig(filename="lgt.txt", filemode="w")
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
-size_x = 270
-size_y = 270
+size_x = 45
+size_y = 45
 
 size_sum = size_y * size_x
 
