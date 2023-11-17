@@ -31,5 +31,5 @@ for contour in contours:
     cv2.rectangle(image, (x, y), (x + w, y + h), (0, 255, 0), 3)
 
 
-plt.imshow(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
+plt.imshow(cv2.cvtColor(image, cv2.COLOR_BGR2HSV))
 plt.show()
