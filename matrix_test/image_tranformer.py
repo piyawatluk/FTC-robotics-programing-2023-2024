@@ -25,7 +25,7 @@ value_channel = image[:, :, 2]
 image_array = np.array(value_channel)
 img = Image.fromarray(image_array)
 img.show()
-
+#test
 size = value_channel.shape
 
 # Display the images
