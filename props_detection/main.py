@@ -2,7 +2,7 @@ import cv2
 import os
 import numpy as np
 cap = cv2.VideoCapture(1)
-path = './img/'
+path = "./props_detection/image/"
 while True:
     _, frame = cap.read()
     y = []
