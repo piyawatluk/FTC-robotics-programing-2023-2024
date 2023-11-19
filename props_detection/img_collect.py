@@ -15,4 +15,4 @@ while True:
     if key == ord('b'):
         b += 1
         cv2.imwrite(path + 'prop_blue_' + str(b) + '.png', frame)
-        cv2.imshow('frame', frame)
+    cv2.imshow('frame', frame)
