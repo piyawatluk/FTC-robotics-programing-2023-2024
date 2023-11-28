@@ -21,13 +21,11 @@ import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 
 @TeleOp(name="Teleop mode alpha ver.", group="Iterative Opmode")
 
-public class Test extends OpMode
+public class Asdf extends OpMode
 {
 
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
-    private DcMotor Lf = null;
-    private DcMotor Rf = null;
     private DcMotor Lr = null;
     private DcMotor Rr = null;
     private IMU imu = null;
@@ -48,26 +46,19 @@ public class Test extends OpMode
      */
     @Override
     public void init() {
-        int ver = imu.getVersion();
         telemetry.addData("Status", "Initialized");
-        telemetry.addData("software: teleop version >>> 0.1");
-        telemetry.addData("IMU version >> ", ver);
 
         // Initialize the hardware variables. Note that the strings used here as parameters
         // to 'get' must correspond to the names assigned during the robot configuration
         // step (using the FTC Robot Controller app on the phone).
-        Lf = hardwareMap.get(DcMotor.class, "Lf");
-        Rf = hardwareMap.get(DcMotor.class, "Rf");
         Rr = hardwareMap.get(DcMotor.class, "Rr");
         Lr = hardwareMap.get(DcMotor.class, "Lr");
 
         // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
         // Pushing the left stick forward MUST make robot go forward. So adjust these two lines based on your first test drive.
         // Note: The settings here assume direct drive on left and right wheels.  Gear Reduction or 90 Deg drives may require direction flips
-        Lf.setDirection(DcMotor.Direction.REVERSE);
         Lr.setDirection(DcMotor.Direction.REVERSE);
         Rr.setDirection(DcMotor.Direction.FORWARD);
-        Rf.setDirection(DcMotor.Direction.FORWARD);
 
         // Tell the driver that initialization is complete.
         telemetry.addData("Status", "Initialized");
@@ -104,10 +95,10 @@ public class Test extends OpMode
 
         // POV Mode uses left stick to go forward, and right stick to turn.
         // - This uses basic math to combine motions and is easier to drive straight.
-        double drive_f = gamepad1.right_trigger - 1.5;
-        double drive_b = gamepad1.left_trigger - 1.5;
-        double responseCurve = 1.5; // Exponent for the power function
-        double scalingFactor = 0.65; // Adjust this to control sensitivity
+        double drive_f = gamepad1.right_trigger;
+        double drive_b = gamepad1.left_trigger;
+        double responseCurve = 1; // Exponent for the power function
+        double scalingFactor = 3; // Adjust this to control sensitivity
 
 // Apply the power function with scaling to the input_x
         double input_x = scalingFactor * Math.pow(gamepad1.left_stick_x, responseCurve);
@@ -132,11 +123,10 @@ public class Test extends OpMode
         imu.initialize(new IMU.Parameters(orientationOnRobot));
 
         YawPitchRollAngles orientation = imu.getRobotYawPitchRollAngles();
-        AngularVelocity avv = imu.getRobotAngularVelocity();
-        imu.resetYaw();
 
         if (reset) {
             imu.resetYaw();
+            telemetry.addData(">>", "angle ref. point reset");
         }
 
         String Lp = Double.toString(leftPower);
@@ -155,9 +145,14 @@ public class Test extends OpMode
 
         // Show the elapsed game time and wheel power.
         telemetry.addData("Status: ", "Run Time: " + runtime.toString());
-        telemetry.addData("speed", "%.2f", Lrps, Rrps);
+        telemetry.addData("left motor feed", "%.1f",leftPower);
+        //telemetry.addData("right motor feed","%.2f", Rrps);
+        telemetry.addData("right motor feed", "%.1f",rightPower);
+
+        //telemetry.addData("speed", "%.2f", Lrps, Rrps);
         telemetry.addData("Yaw (Z)", "%.2f Deg. (Heading)", orientation.getYaw(AngleUnit.DEGREES));
-        telemetry.addData("robot angular velocity", "%.2f M/S", avv.zRotationRate);
+        String De = Double.toString(gamepad1.left_stick_x);
+        telemetry.addData("Debug >>",De);
 
         if (rampUp) {
             // Keep stepping up until we hit the max value.
@@ -179,6 +174,7 @@ public class Test extends OpMode
         // Display the current value
         telemetry.addData("Servo Position", "%5.2f", position);
         telemetry.addData(">", "Press R1 to shoot!!!" );
+        
         telemetry.update();
 
         // Set the servo to the new position and pause;
