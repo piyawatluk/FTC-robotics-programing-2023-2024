@@ -1,4 +1,4 @@
-///@piyawat luknatin LSP robotics team 2023
+///@piyawat, Teera-as LSP robotics team 2023
 
 package org.firstinspires.ftc.teamcode.Teleop;
 
@@ -14,83 +14,72 @@ import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 
-
-@TeleOp(name="Nig", group="Iterative Opmode")
-
-public class Nig extends OpMode
+@TeleOp(name="Teleop_ver_beta_test", group="Iterative Opmode")
+public class Teleop_ver_beta_test extends OpMode
 {
-
-    // Declare OpMode members.
+    // Declare OpMode members
     private ElapsedTime runtime = new ElapsedTime();
-    private DcMotor Lr = null;
-    private DcMotor Rr = null;
-    private DcMotor Et = null;
+    private DcMotor Lr = null; //left rear
+    private DcMotor Rr = null; // right rear
+    private DcMotor Et  = null; // arm extender
     private IMU imu = null;
 
-    static final double INCREMENT   = 0.01;     // amount to slew servo each CYCLE_MS cycle
-    static final double MAX_POS_s     =  0.82;     // Maximum rotational position (still can be change)
-    static final double MAX_POS_a     =  0.1; // Maximum rotational position (still can be change)
-    static final double MID_POS_a     =  0.2;  // Middle rotational position
-    static final double MIN_POS_s     =  0.4;   // Minimum rotational position
-    static final double MIN_POS_a     =  0.3;   // Minimum rotational position
+    static final double INCREMENT = 0.01;  // amount to slew servo each CYCLE_MS cycle
+    static final double MAX_POS_Drone = 0.82;  // Maximum rotational position (still can be change)
+    static final double MAX_POS_Arm = 0.10;  // Maximum rotational position (still can be change)
+    static final double MID_POS_Arm = 0.20;  // Middle rotational position
+    static final double MIN_POS_Drone = 0.40;  // Minimum rotational position
+    static final double MIN_POS_Arm = 0.30;  // Minimum rotational position
 
-    double  position_s = (MAX_POS_s - MIN_POS_s) / 2; // Start at halfway position
-    double  position_a = (MIN_POS_a); // start at min. pos.
+    double  position_Drone = (MAX_POS_Drone - MIN_POS_Drone) / 2; // start at halfway position
+    double  position_Arm = (MIN_POS_Arm); // start at min position 
 
-    /*
-     * Code to run ONCE when the driver hits INIT
-     */
     @Override
     public void init() {
         // Tell the driver that initialization is complete.
         telemetry.addData("Status", "Initialized");
     }
-    //paper drone func.
-    public void shot(){
-        servo = hardwareMap.get(Servo.class, "Sv"); //declare servo pos.
+    // paper drone function 
+    public void drone(){
+        Servo   servo;
+        servo = hardwareMap.get(Servo.class, "Sv"); //declare servo position
         boolean servo1 = gamepad1.right_bumper;
         boolean rampUp = servo1;
-        Servo   servo;
 
         if (rampUp) {
             // Keep stepping up until we hit the max value.
-            position_s += INCREMENT ;
-            if (position_s >= MAX_POS_s ) {
-                position_s = MAX_POS_s;
+            position_Drone += INCREMENT ;
+            if (position_Drone >= MAX_POS_Drone ) {
+                position_Drone = MAX_POS_Drone;
                 rampUp = !rampUp;   // Switch ramp direction
             }
         }
         else {
-
             // Keep stepping down until we hit the min value.
-            position_s -= INCREMENT ;
-            if (position_s <= MIN_POS_s ) {
-                position_s = MIN_POS_s;
+            position_Drone -= INCREMENT ;
+            if (position_Drone <= MIN_POS_Drone ) {
+                position_Drone = MIN_POS_Drone;
                 rampUp = !rampUp;  // Switch ramp direction
             }
             // Set the servo to the new position and pause;
-            servo.setPosition(position_s);
+            servo.setPosition(position_Drone);
         }
 
-        telemetry.addData("Servo Position", "%5.2f", position_s);
-        telemetry.addData(">", "Press R1 to shoot!!!" );
+        telemetry.addData("Servo Position", "%5.2f", position_Drone);
+        telemetry.addData(">", "Press R1 to drone" );
     }
 
-    //func. extender
+    // arm extender function
     public void extender(){
-        Et = hardwareMap.get(DcMotor.class, "Et");
+        Et  = hardwareMap.get(DcMotor.class, "Et");
         Et.setDirection(DcMotor.Direction.FORWARD);
-        boolean extender = gamepad1.right_stick_y;
-        double responseCurve_e = 1; // Exponent for the power function
-        double scalingFactor_e = 3; // Adjust this to control sensitivity
-        double power = scalingFactor_e * Math.pow(gamepad1.left_stick_x, responseCurve_e);
+        double extend_responseCurve = 1; // Exponent for the power function
+        double extend_scalingFactor = 3; // Adjust this to control sensitivity
+        double power = extend_scalingFactor * Math.pow(gamepad1.right_stick_y, extend_responseCurve);
         Et.setPower(power);
-        telemetry.addData(">", "Press L1 for ereaction!!!!!!");
-
+        telemetry.addData(">", "Press right stick y to extend");
     }
-    /*
-     * Code to run REPEATEDLY after the driver hits INIT, but before they hit PLAY
-     */
+    
     @Override
     public void init_loop() {
         Rr = hardwareMap.get(DcMotor.class, "Rr");
@@ -100,14 +89,12 @@ public class Nig extends OpMode
         // Note: The settings here assume direct drive on left and right wheels.  Gear Reduction or 90 Deg drives may require direction flips
         Lr.setDirection(DcMotor.Direction.REVERSE);
         Rr.setDirection(DcMotor.Direction.FORWARD);
-
-
-
     }
 
     /*
      * Code to run ONCE when the driver hits PLAY
      */
+
     @Override
     public void start() {
         runtime.reset();
@@ -119,43 +106,39 @@ public class Nig extends OpMode
 
     @Override
     public void loop() {
-
         // Setup a variable for each drive wheel to save power level for telemetry
         double leftPower;
         double rightPower;
-        double drive_f = gamepad1.right_trigger;
-        double drive_b = gamepad1.left_trigger;
-        double responseCurve_d = 1; // Exponent for the power function
-        double scalingFactor_d = 3; // Adjust this to control sensitivity
+        double foward_drive = gamepad1.right_trigger;
+        double backward_drive = gamepad1.left_trigger;
+        double drive_responseCurve = 1; // Exponent for the power function
+        double drive_scalingFactor = 3; // Adjust this to control sensitivity
 
-// Apply the power function with scaling to the input_x
-        double input_x = scalingFactor_d * Math.pow(gamepad1.left_stick_x, responseCurve_d);
-        double turn = input_x;
+        // Apply the power function with scaling to the input_x
+        double input_x = drive_scalingFactor * Math.pow(gamepad1.left_stick_x, drive_responseCurve);
 
-// Combine drive and turn to calculate left and right powers
-        leftPower = Range.clip(drive_f - drive_b + turn, -1.0, 1.0);
-        rightPower = Range.clip(drive_f - drive_b - turn, -1.0, 1.0);
+        // Combine drive and turn to calculate left and right powers
+        leftPower = Range.clip(foward_drive - backward_drive + input_x, -1.0, 1.0);
+        rightPower = Range.clip(foward_drive - backward_drive - input_x, -1.0, 1.0);
 
-        //robot orient.
+        // control hub orientation
         RevHubOrientationOnRobot.LogoFacingDirection logoDirection = RevHubOrientationOnRobot.LogoFacingDirection.BACKWARD;
         RevHubOrientationOnRobot.UsbFacingDirection  usbDirection  = RevHubOrientationOnRobot.UsbFacingDirection.UP;
         RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(logoDirection, usbDirection);
 
-        //imu declare.
-
+        // imu declaration 
         imu = hardwareMap.get(IMU.class, "imu");
         imu.initialize(new IMU.Parameters(orientationOnRobot));
         YawPitchRollAngles orientation = imu.getRobotYawPitchRollAngles();
 
-        //reset angle
-
+        // reset angle
         boolean reset = gamepad1.left_bumper;
 
         if (reset) {
             imu.resetYaw();
         }
 
-        shot();
+        drone();
         extender();
 
         Lr.setPower(leftPower);
@@ -164,12 +147,12 @@ public class Nig extends OpMode
         // Display the current value
         telemetry.addData("Status: ", "Run Time: " + runtime.toString());
         telemetry.addLine("press L1 for yaw reset");
-        telemetry.addData("left motor feed", "%.1f",leftPower);
+        telemetry.addData("left motor feed", "%.1f", leftPower);
         //telemetry.addData("right motor feed","%.2f", Rrps);
-        telemetry.addData("right motor feed", "%.1f",rightPower);
+        telemetry.addData("right motor feed", "%.1f", rightPower);
         telemetry.addData("input_x", "%.1f", input_x);
-        telemetry.addData("drive_f", "%.1f", drive_f);
-        telemetry.addData("drive_b", "%.1f", drive_b);
+        telemetry.addData("foward_drive", "%.1f", foward_drive);
+        telemetry.addData("backward_drive", "%.1f", backward_drive);
         //telemetry.addData("speed", "%.2f", Lrps, Rrps);
         telemetry.addData("Yaw (Z)", "%.2f Deg. (Heading)", orientation.getYaw(AngleUnit.DEGREES));
         telemetry.addData("pitch (x)", "%.2f Deg.", orientation.getPitch(AngleUnit.DEGREES));
@@ -181,7 +164,6 @@ public class Nig extends OpMode
      */
     @Override
     public void stop() {
-        telemetry.addData(">>", "the robot has been stop");
+        telemetry.addData(">>", "Stopped");
     }
-
 }
