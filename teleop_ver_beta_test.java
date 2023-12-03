@@ -14,8 +14,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 
-@TeleOp(name="teleop_ver_beta_test", group="Iterative Opmode")
-public class teleop_ver_beta_test extends OpMode
+@TeleOp(name="Teleop_ver_beta_test", group="Iterative Opmode")
+public class Teleop_ver_beta_test extends OpMode
 {
     // Declare OpMode members
     private ElapsedTime runtime = new ElapsedTime();
@@ -39,32 +39,25 @@ public class teleop_ver_beta_test extends OpMode
         // Tell the driver that initialization is complete.
         telemetry.addData("Status", "Initialized");
     }
-
-    private void initializeHardware(){
-        Rr = hardwareMap.get(DcMotor.class, "Rr");
-        Lr = hardwareMap.get(DcMotor.class, "Lr");
-        servo = hardwareMap.get(Servo.class, "Sv");
-        Et  = hardwareMap.get(DcMotor.class, "Et");
-        imu = hardwareMap.get(IMU.class, "imu");
-    }
-
     // paper drone function 
-    public void drone(){ 
+    public void drone(){
+        Servo   servo;
+        servo = hardwareMap.get(Servo.class, "Sv"); //declare servo position
         boolean servo1 = gamepad1.right_bumper;
         boolean rampUp = servo1;
-        Servo   servo;
 
         if (rampUp) {
             // Keep stepping up until we hit the max value.
             position_Drone += INCREMENT ;
-            if (position_Drone >= MAX_POS_Drone) {
+            if (position_Drone >= MAX_POS_Drone ) {
                 position_Drone = MAX_POS_Drone;
                 rampUp = !rampUp;   // Switch ramp direction
             }
-        } else {
+        }
+        else {
             // Keep stepping down until we hit the min value.
             position_Drone -= INCREMENT ;
-            if (position_Drone <= MIN_POS_Drone) {
+            if (position_Drone <= MIN_POS_Drone ) {
                 position_Drone = MIN_POS_Drone;
                 rampUp = !rampUp;  // Switch ramp direction
             }
@@ -73,11 +66,12 @@ public class teleop_ver_beta_test extends OpMode
         }
 
         telemetry.addData("Servo Position", "%5.2f", position_Drone);
-        telemetry.addData(">", "Press R1 to launch drone");
+        telemetry.addData(">", "Press R1 to drone" );
     }
 
     // arm extender function
     public void extender(){
+        Et  = hardwareMap.get(DcMotor.class, "Et");
         Et.setDirection(DcMotor.Direction.FORWARD);
         double extend_responseCurve = 1; // Exponent for the power function
         double extend_scalingFactor = 3; // Adjust this to control sensitivity
@@ -88,6 +82,8 @@ public class teleop_ver_beta_test extends OpMode
     
     @Override
     public void init_loop() {
+        Rr = hardwareMap.get(DcMotor.class, "Rr");
+        Lr = hardwareMap.get(DcMotor.class, "Lr");
         // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
         // Pushing the left stick forward MUST make robot go forward. So adjust these two lines based on your first test drive.
         // Note: The settings here assume direct drive on left and right wheels.  Gear Reduction or 90 Deg drives may require direction flips
@@ -131,6 +127,7 @@ public class teleop_ver_beta_test extends OpMode
         RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(logoDirection, usbDirection);
 
         // imu declaration 
+        imu = hardwareMap.get(IMU.class, "imu");
         imu.initialize(new IMU.Parameters(orientationOnRobot));
         YawPitchRollAngles orientation = imu.getRobotYawPitchRollAngles();
 
