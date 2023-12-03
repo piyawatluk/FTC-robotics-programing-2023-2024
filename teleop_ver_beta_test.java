@@ -14,8 +14,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 
-@TeleOp(name="teleop_ver_beta_test", group="Iterative Opmode")
-public class teleop_ver_beta_test extends OpMode
+@TeleOp(name="Teleop_ver_beta_test", group="Iterative Opmode")
+public class Teleop_ver_beta_test extends OpMode
 {
     // Declare OpMode members
     private ElapsedTime runtime = new ElapsedTime();
@@ -40,11 +40,11 @@ public class teleop_ver_beta_test extends OpMode
         telemetry.addData("Status", "Initialized");
     }
     // paper drone function 
-    public void drone(){ 
+    public void drone(){
+        Servo   servo;
         servo = hardwareMap.get(Servo.class, "Sv"); //declare servo position
         boolean servo1 = gamepad1.right_bumper;
         boolean rampUp = servo1;
-        Servo   servo;
 
         if (rampUp) {
             // Keep stepping up until we hit the max value.
@@ -166,5 +166,4 @@ public class teleop_ver_beta_test extends OpMode
     public void stop() {
         telemetry.addData(">>", "Stopped");
     }
-
 }
