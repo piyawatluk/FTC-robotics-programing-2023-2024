@@ -43,10 +43,7 @@ public class Auto_test extends LinearOpMode {
         RevHubOrientationOnRobot.LogoFacingDirection logoDirection = RevHubOrientationOnRobot.LogoFacingDirection.BACKWARD;
         RevHubOrientationOnRobot.UsbFacingDirection usbDirection = RevHubOrientationOnRobot.UsbFacingDirection.UP;
         RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(logoDirection, usbDirection);
-
-
         imu.initialize(new IMU.Parameters(orientationOnRobot));
-        YawPitchRollAngles orient = imu.getRobotYawPitchRollAngles();
 
         leftdrive.setDirection(DcMotor.Direction.REVERSE);//motor direction declare
         rightdrive.setDirection(DcMotor.Direction.FORWARD);
@@ -60,7 +57,7 @@ public class Auto_test extends LinearOpMode {
         imu.resetYaw();//reset angle
 
         telemetry.addData("starting at", "%2d :%2d", leftdrive.getCurrentPosition(), rightdrive.getCurrentPosition());
-        telemetry.addData("yaw (z)", "%.2f", orient.getYaw(AngleUnit.DEGREES));;
+        telemetry.addData("yaw (z)", "%.2f", imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES));
         telemetry.update();
 
         waitForStart();
@@ -68,7 +65,7 @@ public class Auto_test extends LinearOpMode {
         // Example: Turn 180 degrees to the right
         // encoderDrive(TURN_SPEED, 180, 5.0, ki, kp, kd);
         
-        encoderDrive(DRIVE_SPEED,  2, 5.0);  // S1: Forward 47 Inches with 5 Sec timeout
+        encoderDrive(DRIVE_SPEED,  2, 5.0, ki, kp, kd);  // S1: Forward 47 Inches with 5 Sec timeout
         telemetry.addData("Path", "Complete");
         telemetry.update();
         sleep(1000);  // pause to display final telemetry message.
@@ -89,8 +86,8 @@ public class Auto_test extends LinearOpMode {
         if (opModeIsActive()) {
 
             // Determine new target position, and pass to motor controller
-            newLeftTarget = leftdrive.getCurrentPosition() + (int)(distance * COUNTS_PER_METER);
-            newRightTarget = rightdrive.getCurrentPosition() + (int)(distance * COUNTS_PER_METER);
+            newLeftTarget = leftdrive.getCurrentPosition() + (int) (distance * COUNTS_PER_METER);
+            newRightTarget = rightdrive.getCurrentPosition() + (int) (distance * COUNTS_PER_METER);
             leftdrive.setTargetPosition(newLeftTarget);
             rightdrive.setTargetPosition(newRightTarget);
 
@@ -115,7 +112,8 @@ public class Auto_test extends LinearOpMode {
 
                 // Display it for the driver.
                 telemetry.addData("Running to",  " %7d :%7d", newLeftTarget,  newRightTarget);
-                telemetry.addData("Currently at",  " at %7d :%7d", leftdrive.getCurrentPosition(), rightdrive.getCurrentPosition());
+                telemetry.addData("Currently at",  "at %7d :%7d", leftdrive.getCurrentPosition(), rightdrive.getCurrentPosition());
+                telemetry.addData("PID Coefficients", "Kp: %.2f, Ki: %.2f, Kd: %.2f", kp, ki, kd);
                 telemetry.update();
             }
 
