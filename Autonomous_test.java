@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.Autonomous;
 
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous; //call op mode
+import com.qualcomm.robotcore.hardware.PIDCoefficients;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
@@ -14,7 +15,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 //all unit in this code are metric
 
-@Autonomous(name = "autonomus test", group = "Robot")
+@Autonomous(name = "autonomous test", group = "Robot")
 public class Auto_test extends LinearOpMode {
     private DcMotor leftdrive = null;
     private DcMotor rightdrive = null;
@@ -22,25 +23,23 @@ public class Auto_test extends LinearOpMode {
     private IMU imu = null;
 
     //declare motor constant
-    static final double     COUNTS_PER_MOTOR_REV    = 1440 ;    // eg: TETRIX Motor Encoder
-    static final double     DRIVE_GEAR_REDUCTION    = 1.0 ;     // No External Gearing.
-    static final double     WHEEL_DIAMETER_METER   = 0.1 ;     // For figuring circumference
-    static final double     COUNTS_PER_METER         = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
-            (WHEEL_DIAMETER_METER * 3.1415);
-    static final double     DRIVE_SPEED             = 1;
-    static final double     TURN_SPEED              = 0.5;
-
+    static final double  COUNTS_PER_MOTOR_REV  = 1440 ;    // eg: TETRIX Motor Encoder
+    static final double  DRIVE_GEAR_REDUCTION  = 1.0 ;     // No External Gearing.
+    static final double  WHEEL_DIAMETER_METER  = 0.1 ;     // For figuring circumference
+    static final double  COUNTS_PER_METER  = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) / (WHEEL_DIAMETER_METER * 3.1415);
+    static final double  DRIVE_SPEED  = 1;
+    static final double  TURN_SPEED  = 0.5;
 
     @Override
     public void runOpMode(){
-        leftdrive = hardwareMap.get(DcMotor.class, "Lr");//hardware posistion declare
+        leftdrive = hardwareMap.get(DcMotor.class, "Lr"); //hardware posistion declare
         rightdrive = hardwareMap.get(DcMotor.class, "Rr");
         imu = hardwareMap.get(IMU.class, "imu");
         double ki = 0.5;
         double kp = 0.5;
-        double tau = 0.1;
+        double kd = 0.5;
 
-
+        
         RevHubOrientationOnRobot.LogoFacingDirection logoDirection = RevHubOrientationOnRobot.LogoFacingDirection.BACKWARD;
         RevHubOrientationOnRobot.UsbFacingDirection usbDirection = RevHubOrientationOnRobot.UsbFacingDirection.UP;
         RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(logoDirection, usbDirection);
@@ -65,6 +64,9 @@ public class Auto_test extends LinearOpMode {
         telemetry.update();
 
         waitForStart();
+
+        // Example: Turn 180 degrees to the right
+        // encoderDrive(TURN_SPEED, 180, 5.0, ki, kp, kd);
         
         encoderDrive(DRIVE_SPEED,  2, 5.0);  // S1: Forward 47 Inches with 5 Sec timeout
         telemetry.addData("Path", "Complete");
@@ -75,7 +77,10 @@ public class Auto_test extends LinearOpMode {
 
     public void encoderDrive(double speed,
                              double distance,
-                             double timeoutS) {
+                             double timeoutS,
+                             double ki,
+                             double kp,
+                             double kd) {
         int newLeftTarget;
         int newRightTarget;
 
