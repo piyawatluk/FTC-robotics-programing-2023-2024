@@ -53,8 +53,8 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 @Autonomous(name="Robot: Auto Drive By Gyro", group="Robot")
-@Disabled
-public class Main_auto extends LinearOpMode {
+
+public class Auto_test2 extends LinearOpMode {
 
     /* Declare OpMode members. */
     private DcMotor         leftDrive   = null;
@@ -103,8 +103,8 @@ public class Main_auto extends LinearOpMode {
     public void runOpMode() {
 
         // Initialize the drive system variables.
-        leftDrive  = hardwareMap.get(DcMotor.class, "left_drive");
-        rightDrive = hardwareMap.get(DcMotor.class, "right_drive");
+        leftDrive  = hardwareMap.get(DcMotor.class, "Lr");
+        rightDrive = hardwareMap.get(DcMotor.class, "Rr");
 
         // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
         // When run, this OpMode should start both motors driving forward. So adjust these two lines based on your first test drive.
@@ -389,5 +389,6 @@ public class Main_auto extends LinearOpMode {
         YawPitchRollAngles orientation = imu.getRobotYawPitchRollAngles();
         return orientation.getYaw(AngleUnit.DEGREES);
     }
+}
 
 
